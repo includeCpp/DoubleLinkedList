@@ -1,6 +1,8 @@
 #ifndef _ii_data_structures__
 #define _ii_data_structures__
 
+#include <iterator>
+
 
 namespace data_structures{
 
@@ -23,9 +25,13 @@ public:
 	void push_back(const T& _value);
 	void get_first() const;
 	void print(const T& num);
-	int train_();
+	void clear();
+	d_list<T>& operator=(const d_list<T>& copy);
+	~d_list();
 
-private:
+	using iterator = Node<T>*;
+
+//private:
 	Node<T>* first;
 };
 
@@ -81,50 +87,71 @@ void d_list<T>::print(const T& num){
 }
 
 template<typename T>
-int d_list<T>::train_(){
-	if(is_empty()){
-		return 0;
-	}
-	if(!first -> next){
-		return 1;
-	}
-	int light = 0;
-	int dark = 0;
-	int count_l = 0;
-	int count_d = 0;
-	int railway_carriage_count = 0;
-	Node<T>* p;
-	while(railway_carriage_count == 0){
-		p = first;
-		while(light != count_l + 1){
-			p = p -> next;
-			if(p -> value != 1){
-			p -> value = 1;
-			light++;
-			break;
-			}
-			light++;
+void d_list<T>::clear(){
+    Node<T>* p = first;
+    while(p){
+        p = p -> next;
+        delete first;
+        first = p;
+    }
+
+}
+
+template<typename T>
+d_list<T>& d_list<T>::operator=(const d_list<T>& copy){
+    if(this == &copy){
+        return *this;
+    }
+    if(!first || !copy.first){
+        if(!first){
+            Node<T>* m = copy.first;
+            while(m){
+                push_back(m -> value);
+                m = m -> next;
+            }
+            return *this;
+        }
+        clear();
+        std::cout << "The argument was empty.";
+        return *this;
+    }
+    Node<T>* p = first;
+    Node<T>* m = copy.first;
+    Node<T>* last = p;
+    while(m && p){
+        p -> value = m -> value;
+        last = p;
+        p = p -> next;
+        m = m -> next;
+    }
+    while(p){
+        Node<T>* j = p;
+        p = p -> next;
+        delete j;
+    }
+    if(last){
+        last -> next = nullptr;
+    }
+    while(m){
+        last -> next = new Node<T>(m -> value);
+        last = last -> next;
+        m = m -> next;
+    }
+    return *this;
+}
+
+template<typename T>
+d_list<T>::~d_list(){
+	Node<T>* p = first -> next;
+	Node<T>* g = p;
+	while(p != first){
+		p = p -> next;
+		delete g;
+		g = p;
+		if(p == first){
+			delete p;
 		}
-		count_l = light;
-		light = 0;
-		p = first;
-		while(dark != count_d + 1){
-			p = p -> prev;
-			if(p -> value != 0){
-				p -> value = 0;
-				dark++;
-				break;
-			}
-			dark++;
-		}
-		if(count_d == dark || count_l == light){
-			std::cout << count_l << " " << count_d << std::endl;
-			return railway_carriage_count = count_l + count_d;
-		}
-		count_d = dark;
-		dark = 0;
 	}
-	return 0;
 }
 
 } // data_structures
