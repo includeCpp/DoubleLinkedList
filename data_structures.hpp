@@ -15,24 +15,27 @@ public:
 	Node<T>* prev;
 };
 
-template<typename T>
+template<typename Q>
 struct d_list{
 public:
-	d_list(Node<T>* _first = nullptr);
-	d_list(const d_list<T>& copy);
+	d_list(Node<Q>* _first = nullptr);
+	d_list(const d_list<Q>& copy);
 
 	bool is_empty() const;
-	void push_back(const T& _value);
+	void push_back(const Q& _value);
 	void get_first() const;
-	void print(const T& num);
+	void print(const Q& num);
 	void clear();
-	d_list<T>& operator=(const d_list<T>& copy);
+	d_list<Q>& operator=(const d_list<Q>& copy);
 	~d_list();
+	
+private:
+	template<typename T> 
+	friend int train_(data_structures::d_list<T>& arglist);
 
-	using iterator = Node<T>*;
+	using iterator = Node<Q>*;
 
-//private:
-	Node<T>* first;
+	Node<Q>* first;
 };
 
 template<typename T>
@@ -88,13 +91,16 @@ void d_list<T>::print(const T& num){
 
 template<typename T>
 void d_list<T>::clear(){
-    Node<T>* p = first;
-    while(p){
-        p = p -> next;
-        delete first;
-        first = p;
-    }
-
+    Node<T>* p = first -> next;
+	Node<T>* g = p;
+	while(p != first){
+		p = p -> next;
+		delete g;
+		g = p;
+		if(p == first){
+			delete p;
+		}
+	}
 }
 
 template<typename T>
@@ -142,16 +148,76 @@ d_list<T>& d_list<T>::operator=(const d_list<T>& copy){
 
 template<typename T>
 d_list<T>::~d_list(){
-	Node<T>* p = first -> next;
-	Node<T>* g = p;
-	while(p != first){
-		p = p -> next;
-		delete g;
-		g = p;
-		if(p == first){
-			delete p;
-		}
+	clear();
+}
+
+template<typename T>
+int train_(d_list<T>& arglist){
+	if(arglist.is_empty()){
+		std::cout << "There is no train: ";
+		return 0;
 	}
+	if(!arglist.first -> next){
+		std::cout << "There is only one railway carriage: ";
+		return 1;
+	}
+    Node<T>* g = arglist.first -> prev;
+    if(g -> prev == arglist.first){
+    	std::cout << "There is only two railway carriages: ";
+        return 2;
+    }
+    Node<T>* p = arglist.first;
+    p -> value = 1;
+    g -> value = 0;
+	//iterator it1 = p;
+	//iterator it2 = g;
+	int fval = p -> value;
+	int bval = g -> value;
+	int light = 0;
+	int dark = 0;
+	int count_l = 0;
+	int count_d = 0;
+	int railway_carriage_count = 0;
+	while(railway_carriage_count == 0){
+		std::cout << "print" << std::endl;
+		//while(light != count_l + 1){
+			std::cout << "go" << std::endl;
+            if(p -> value == fval){
+                p = p -> next;
+                if(p -> value != 1){
+                    p -> value = 1;
+                    //light++;
+                    //break;
+                }
+                light++;
+            }
+            else{
+            	std::cout << "Odd: ";
+            	return railway_carriage_count = light + dark + 1;
+            }
+		//}
+		count_l = light;
+        fval = p -> value;
+		if(dark != count_d + 1){
+			std::cout << "came" << std::endl;
+            if(g -> value == bval){
+                g = g -> prev;
+                if(g -> value != 0){
+                    g -> value = 0;
+                    //dark++;
+                    //break;
+                }
+                dark++;
+            }
+            else{
+            	std::cout << "Even: ";
+            	return railway_carriage_count = light + dark + 1;
+            }
+		}
+		count_d = dark;
+        bval = g -> value;
+	}
+	return 0;
 }
 
 } // data_structures
