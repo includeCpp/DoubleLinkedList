@@ -2,6 +2,7 @@
 #define _ii_data_structures__
 
 #include <iterator>
+#include <string>
 
 
 namespace data_structures{
@@ -153,19 +154,28 @@ d_list<T>::~d_list(){
 
 template<typename T>
 int train_(d_list<T>& arglist){
-	if(arglist.is_empty()){
-		std::cout << "There is no train: ";
-		return 0;
+	int x = 0;
+	try{
+		if(arglist.is_empty()){
+			std::string str = "There is no train: ";
+			throw str;
+		}
+		if(!arglist.first -> next){
+			std::string str = "There is only one railway carriage: ";
+			x = 1;
+			throw str;
+		}
+	    Node<T>* g = arglist.first -> prev;
+	    if(g -> prev == arglist.first){
+	    	std::string str = "There is only two railway carriages: ";
+	    	x = 2;
+	        throw str;
+	    }
+	} catch(std::string str){
+		std::cout << str;
+		return x;
 	}
-	if(!arglist.first -> next){
-		std::cout << "There is only one railway carriage: ";
-		return 1;
-	}
-    Node<T>* g = arglist.first -> prev;
-    if(g -> prev == arglist.first){
-    	std::cout << "There is only two railway carriages: ";
-        return 2;
-    }
+	Node<T>* g = arglist.first -> prev;
     Node<T>* p = arglist.first;
     p -> value = 1;
     g -> value = 0;
@@ -179,9 +189,7 @@ int train_(d_list<T>& arglist){
 	int count_d = 0;
 	int railway_carriage_count = 0;
 	while(railway_carriage_count == 0){
-		std::cout << "print" << std::endl;
 		//while(light != count_l + 1){
-			std::cout << "go" << std::endl;
             if(p -> value == fval){
                 p = p -> next;
                 if(p -> value != 1){
@@ -199,7 +207,6 @@ int train_(d_list<T>& arglist){
 		count_l = light;
         fval = p -> value;
 		if(dark != count_d + 1){
-			std::cout << "came" << std::endl;
             if(g -> value == bval){
                 g = g -> prev;
                 if(g -> value != 0){
